@@ -1,0 +1,13 @@
+Pinball
+
+We need something similar to lab 5a, but with the ability to place
+immovable objects in the field.
+
+
+Maybe make a more serious class structure (Prof often brings up OOP in lecture)
+
+Only the ball needs ODE solver(?)
+Forces on the ball won't
+
+Floppers will rotate in place, maybe make the hinge of the flopper in it's center
+with half of it hidden by the game boundary
