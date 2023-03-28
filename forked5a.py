@@ -50,13 +50,19 @@ class Brick(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.color = color
         pygame.draw.rect(self.image, color, self.rect)
         self.name = name
         self.state = np.array([x,y])  #this will be expanded when rotation is involved
+        self.image_rot = self.image
 
     # def to_screen(self):
     #     # return [int(pos[0]), int(pos[1])]
     #     return [int((self.state[0] - self.radius + dim[0]//2)*scale), int((-self.state[1] - self.radius +  dim[1]//2)*scale)]
+    def rotate(self, angle):
+        self.image_rot = pygame.transform.rotate(self.image, 90)
+        self.rect_rot = self.image_rot.get_rect()
+        pygame.draw.rect(self.image_rot, WHITE, self.rect_rot)
 
     def to_screen(self):
         return [int((self.state[0]  + dim[0]//2)*scale), int((-self.state[1]  + dim[1]//2)*scale)]
@@ -81,6 +87,7 @@ class Disk(pygame.sprite.Sprite):
         self.image = pygame.Surface([scaled*2, scaled*2])
         self.image.set_colorkey(BLACK)
         # self.image.fill(BLACK)
+
         pygame.draw.circle(self.image, color, (scaled, scaled), scaled, 3)
 
         self.rect = self.image.get_rect()
@@ -360,8 +367,6 @@ def main():
 
     print ('Press q to quit')
 
-    random.seed(0)
-
     # Initializing pygame
     pygame.init()
     win_width = window[0]
@@ -387,6 +392,7 @@ def main():
     disk3.set_vel([0.8, 5])
     # disk4.set_vel([-2, 0])
     rect1 = Brick('b1', 6, 4, 0, 0)
+    rect1.rotate(50)
     universe.add_body(rect1, False)
 
     # cur_time = clock.get_time()
@@ -410,6 +416,8 @@ def main():
     iter_per_frame = 1
 
     frame = 0
+
+    # clock.tick(60)
     while frame < total_frames:
         clock.tick(60)
         if False:
