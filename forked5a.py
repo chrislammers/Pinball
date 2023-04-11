@@ -96,7 +96,7 @@ class Disk(pygame.sprite.Sprite):
         self.radius = radius
         self.name = name
         self.distances = []
-        self.tol_distance = 0.000000001
+        self.tol_distance = 0.001
         self.grav = [0, -4]
 
         self.solver = ode(self.f)
@@ -213,8 +213,8 @@ class Disk(pygame.sprite.Sprite):
         self.state[-2:] = v2A
         other.state[-2:] = v2B
         # new_state = np.array([self.state[0], self.state[1], v2A[0], v2A[1]])
-        self.solver.set_initial_value(self.state, t)
-        other.solver.set_initial_value(other.state, t)
+        self.solver.set_initial_value(self.state, t+dt)
+        other.solver.set_initial_value(other.state, t+dt)
         pass
 
 
@@ -241,7 +241,7 @@ class Disk(pygame.sprite.Sprite):
         # print(state[0],self.tol_distance)
         # print("--while loop--")
         iterations = 0
-        while abs(state[0])-10+self.radius > self.tol_distance or abs(state[1])-10+self.radius > self.tol_distance:
+        while abs(state[0])-10+self.radius > self.tol_distance and abs(state[1])-10+self.radius > self.tol_distance:
             # print("between",beg,"and", end)
             mid = (beg+end)/2
             state = self.solver.integrate(mid)
@@ -387,13 +387,13 @@ def main():
     # disk4.set_pos([0, 1])
 
 
-    disk1.set_vel([0.8, 5])
+    disk1.set_vel([4, 5])
     # disk2.set_vel([-2, 0])
-    disk3.set_vel([0.8, 5])
+    disk3.set_vel([3, 3])
     # disk4.set_vel([-2, 0])
-    rect1 = Brick('b1', 6, 4, 0, 0)
-    rect1.rotate(50)
-    universe.add_body(rect1, False)
+    # rect1 = Brick('b1', 6, 4, 0, 0)
+    # rect1.rotate(50)
+    # universe.add_body(rect1, False)
 
     # cur_time = clock.get_time()
 

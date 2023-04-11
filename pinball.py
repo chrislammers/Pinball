@@ -125,16 +125,16 @@ class Ball(pygame.sprite.Sprite):
 
     def update1(self, objects, walls, dt):
         # force = np.array([0,0])
-        # print("updating,", self.name)
+        print("updating,", self.name)
 
         pass
 
         for b in objects:
             new_state = self.solver.integrate(self.solver.t+dt)
 
-            # self.state = new_state
-            #
-            # self.solver.t += dt
+            self.state = new_state
+
+            self.solver.t += dt
 
             for w in walls:
                 other = walls[w]
@@ -154,7 +154,7 @@ class Ball(pygame.sprite.Sprite):
                     # print(self.pos)
                     pass
                 else:
-                    # print("\nCollision!\n\n")
+                    print("\nCollision!\n\n")
 
 
 
@@ -213,7 +213,7 @@ def main():
     ball1.set_pos([80,80])
     ball1.set_vel([2,2])
     shape1 = Poly('shape1', [(100, 120), (110, 150), (160, 130)])
-    shape2 = Poly('shape2', [(100, 200), (100, 500), (600, 300)])
+    # shape2 = Poly('shape2', [(100, 200), (100, 500), (600, 300)])
 
     universe.add_wall(shape1)
     # universe.add_wall(shape2)
