@@ -70,8 +70,8 @@ class Ball(pygame.sprite.Sprite):
     def down_under(self):
         # check if the ball is below the game, reset ball
         if self.state[1]>=fieldy[1]:
-            self.set_pos([200,100])
-            self.set_vel([0,10])
+            self.set_pos([10,100])
+            self.set_vel([100,20])
 
     def wall_coll(self, state):
         return state[0]<=fieldx[0]+self.radius or state[0]>=fieldx[1]-self.radius or state[1]<=fieldy[0]+self.radius
@@ -314,7 +314,17 @@ def main():
     board.add_ball(ball)
 
     bumper = Bumper("b1", 200, 200, GREY, 20)
+    bumper1 = Bumper("b2", 100, 300, GREY, 20)
+    bumper2 = Bumper("b3", 400, 50, GREY, 20)
+    bumper3 = Bumper("b4", 200, 400, GREY, 20)
+    bumper4 = Bumper("b5", 270, 200, GREY, 20)
+    bumper5 = Bumper("b6", 190, 550, GREY, 20)
     board.add_obj(bumper)
+    board.add_obj(bumper1)
+    board.add_obj(bumper2)
+    board.add_obj(bumper3)
+    board.add_obj(bumper4)
+    board.add_obj(bumper5)
 
     total_frames = 30000
     iter_per_frame = 1
