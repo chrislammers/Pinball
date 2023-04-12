@@ -282,6 +282,8 @@ class Bumper(pygame.sprite.Sprite):
     def to_screen(self):
         return self.state[:2] - np.array([self.radius, self.radius])
 
+
+# never got around to making the spring...
 class Spring(pygame.sprite.Sprite):
     # xy is the anchor location, length is the distance from the anchor
     def __init__(self,name,x,y,length):
@@ -398,9 +400,11 @@ def main():
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_f:
             flipperL.set_pos([flipperL.state[0]-20,flipperL.state[1]])
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_j:
-            flipperR.set_radius(40)
+            flipperR.set_pos([flipperR.state[0]-20,flipperR.state[1]])
         elif event.type == pygame.KEYUP and event.key == pygame.K_f:
             flipperL.set_pos([flipperL.state[0]+20,flipperL.state[1]])
+        elif event.type == pygame.KEYUP and event.key == pygame.K_j:
+            flipperR.set_pos([flipperR.state[0]+20,flipperR.state[1]])
             # flipperL.
         else:
             pass
