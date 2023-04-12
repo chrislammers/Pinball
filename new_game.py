@@ -70,8 +70,8 @@ class Ball(pygame.sprite.Sprite):
     def down_under(self):
         # check if the ball is below the game, reset ball
         if self.state[1]>=fieldy[1]:
-            self.set_pos([10,100])
-            self.set_vel([100,20])
+            self.set_pos([500-self.radius-1,500])
+            self.set_vel([0,-100])
 
     def wall_coll(self, state):
         return state[0]<=fieldx[0]+self.radius or state[0]>=fieldx[1]-self.radius or state[1]<=fieldy[0]+self.radius
@@ -177,7 +177,7 @@ class Ball(pygame.sprite.Sprite):
         v2A = vA + (j*n)/self.mass
         self.state[-2:] = v2A
         self.solver.set_initial_value(self.state, t+dt)
-        pass
+
 
     def f(self, t, state):
         dx = state[2]
@@ -187,7 +187,7 @@ class Ball(pygame.sprite.Sprite):
         return [dx, dy, dvx, dvy]
 
     def update1(self, objects, dt):
-        print("updating: ", self.name)
+        # print("updating: ", self.name)
 
         # objects is a dict of non-ball objects that the ball can collide with.
         #   the walls (basically, the window itself.)
@@ -232,11 +232,11 @@ class Ball(pygame.sprite.Sprite):
 
 class Bumper(pygame.sprite.Sprite):
     # kind of like a ball, but it doesn't move
-    def __init__(self, name, x, y, color=BLUE, radius=1):
+    def __init__(self, name, x, y, color=BLUE, radius=1, bounce=1):
         pygame.sprite.Sprite.__init__(self)
 
         if color==BLACK:
-            color = GREY
+            color=GREY
         self.image = pygame.Surface([radius*2, radius*2])
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
@@ -250,9 +250,26 @@ class Bumper(pygame.sprite.Sprite):
         self.mass = 10
         self.radius = radius
         self.name = name
+        self.bounce = bounce
+        self.color = color
+
+    # def set_radius(self, r):
+    #     self.radius = r
+    #     self.image = pygame.Surface([self.radius*2, self.radius*2])
+    #     self.image.set_colorkey(BLACK)
+    #     # self.rect = self.image.get_rect()
+    #     # self.rect.x, self.rect.y = self.to_screen()
+    #     print(self.state)
+    #     pygame.draw.circle(self.image, self.color, (self.state[0], self.state[1]), self.radius)
 
     def set_pos(self, pos):
         self.state[0:2] = pos
+        self.image = pygame.Surface([self.radius*2, self.radius*2])
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = self.to_screen()
+        pygame.draw.circle(self.image, self.color, (self.state[0], self.state[1]), self.radius)
+
     def get_pos(self):
         return self.state[0:2]
     def set_vel(self, vel):
@@ -264,6 +281,32 @@ class Bumper(pygame.sprite.Sprite):
 
     def to_screen(self):
         return self.state[:2] - np.array([self.radius, self.radius])
+
+class Spring(pygame.sprite.Sprite):
+    # xy is the anchor location, length is the distance from the anchor
+    def __init__(self,name,x,y,length):
+        pygame.sprite.Sprite.__init__(self)
+        # size:
+        radius = 20
+
+        self.image = pygame.Surface([radius*2,radius*2])
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+
+        pygame.draw.circle(self.image, GREEN, (radius, radius), radius)
+
+        self.state = np.zeros(4)
+        self.state[:2] = [x,y+length]
+        self.rest = length
+        self.name = name
+
+    def set_pos(self, pos):
+        self.state[:2] = pos
+
+    # def update1(self, dt):
+
+
+
 
 class Board:
     def __init__(self):
@@ -313,18 +356,27 @@ def main():
     ball.set_pos([100,100])
     board.add_ball(ball)
 
-    bumper = Bumper("b1", 200, 200, GREY, 30)
-    bumper1 = Bumper("b2", 100, 300, GREY, 30)
-    bumper2 = Bumper("b3", 400, 50, GREY, 30)
-    bumper3 = Bumper("b4", 200, 400, GREY, 30)
-    bumper4 = Bumper("b5", 500, 800, GREY, 200)
-    bumper5 = Bumper("b6", 0, 800, GREY, 200)
-    board.add_obj(bumper)
+    bumper1 = Bumper("b1", 200, 200, GREY, 30)
+    bumper2 = Bumper("b2", 100, 300, GREY, 30)
+    bumper3 = Bumper("b3", 350, 400, GREY, 30)
+    bumper4 = Bumper("b4", 200, 400, GREY, 30)
+    bumper5 = Bumper("b5", 500, 800, GREY, 200)
+    bumper6 = Bumper("b6", 0, 800, GREY, 200)
+    bumper7 = Bumper("b7", 400, 540, GREY, 30)
+    bumper8 = Bumper("b8", 510, -10, GREY, 30)
+    flipperR = Bumper("fL",300, 780, BLUE, 20)
+    flipperL = Bumper("fR",200, 780, BLUE, 20)
+
     board.add_obj(bumper1)
     board.add_obj(bumper2)
     board.add_obj(bumper3)
     board.add_obj(bumper4)
     board.add_obj(bumper5)
+    board.add_obj(bumper6)
+    board.add_obj(bumper7)
+    board.add_obj(bumper8)
+    board.add_obj(flipperL)
+    board.add_obj(flipperR)
 
     total_frames = 30000
     iter_per_frame = 1
@@ -342,6 +394,14 @@ def main():
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_q:
             pygame.quit()
             sys.exit(0)
+        # FLIPPERS
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_f:
+            flipperL.set_pos([flipperL.state[0]-20,flipperL.state[1]])
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_j:
+            flipperR.set_radius(40)
+        elif event.type == pygame.KEYUP and event.key == pygame.K_f:
+            flipperL.set_pos([flipperL.state[0]+20,flipperL.state[1]])
+            # flipperL.
         else:
             pass
 
